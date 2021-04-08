@@ -1,0 +1,54 @@
+{
+    "env":{
+        "test":{
+            "srv": {
+                "port": 3003,
+                "host": "localhost",
+                "protocol": "http",
+                "module": {
+                    "load" : [
+                        "etl"
+                    ]
+                }
+            },
+            "app": {
+                "db":{
+                    "name": "tropipay-test",
+                    "host": "localhost",
+                    "port": "27017",
+                    "driver": "mongodb"
+                }
+            }
+        },
+        "production":{
+            "srv": {
+                "port": 3000,
+                "host": "localhost",
+                "protocol": "http",
+                "log": 1,
+                "module": {
+                    "load" : [
+                        "etl",
+                        "graph"
+                    ]
+                },
+                "route":{
+                    "/":{
+                        "method": "get",
+                        "module": "etl",
+                        "controller": "DefaultController",
+                        "action": "home"
+                    }
+                }
+            },
+            "app": {
+                "db":{
+                    "name": "tropipay",
+                    "host": "localhost",
+                    "port": "27017",
+                    "driver": "mongodb"
+                }
+            }
+        }
+    }
+}
