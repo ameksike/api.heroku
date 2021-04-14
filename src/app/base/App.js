@@ -1,35 +1,42 @@
 /*
  * @author		Antonio Membrides Espinosa
- * @date		07/05/2020
+ * @email		tonykssa@gmail.com
+ * @date		15/03/2020
  * @copyright  	Copyright (c) 2020-2030
- * @license    	GPL
+ * @license    	CPL
  * @version    	1.0
  * */
 const express = require("express");
 const cors = require('cors');
+const dotenv = require('dotenv');
+
 const ErrorHandler = require(__dirname + '/ErrorHandler.js');
 const IoC = require(__dirname + '/IoC.js');
+const DAO = require(__dirname + '/DAO.js');
 
 class App {
 
     constructor(path) {
+        this.option = { app: {}, srv: {} };
         this.path = path;
         this.app = express();
         this.mod = [];
         this.cfg = {};
         this.err = new ErrorHandler();
         this.ioc = new IoC();
+        this.dao = new DAO();
     }
 
     init() {
         this.loadConfig();
         this.initApp();
+        this.initModel();
         this.loadModules();
         return this;
     }
 
     run() {
-        const port = process.env.PORT || this.cfg.srv.port;
+        const port = this.cfg.srv.port;
         return this.app.listen(port, () => {
             if (this.cfg.srv.log === 1) {
                 console.log(
@@ -42,41 +49,62 @@ class App {
     }
 
     loadConfig() {
-        const envid = process.env.NODE_ENV || 'production';
-        const option = require(this.path + 'cfg/config.json') || {};
-        this.cfg = option.env[envid] || { srv: { module: {} }};
-        this.cfg.env = envid;
+        dotenv.config();
+        const envid = process.env.NODE_ENV || 'development';
+        const app = require(this.path + 'cfg/config.json') || {};
+        const srv = require(this.path + 'cfg/core.json') || {};
+
+        this.cfg.env = process.env;
+        this.cfg.envid = envid;
+        this.cfg.app = app[envid] || {};
+        this.cfg.srv = srv[envid] || {};
+
+        this.cfg.srv.module = this.cfg.srv.module || {};
         this.cfg.srv.module.path = this.path + 'src/';
+        this.cfg.srv.log = this.cfg.env.LOGGER_DB === 'true' ? 1 : this.cfg.srv.log;
+        this.cfg.srv.port = this.cfg.env.PORT || this.cfg.srv.port;
+
+        this.cfg.app.url = this.cfg.env.DATABASE_URL;
+        this.cfg.app.logging = this.cfg.srv.log > 0;
         this.ioc.configure({ path: this.cfg.srv.module.path });
     }
 
     loadModules() {
-
         if (this.cfg.srv.module && this.cfg.srv.module.load) {
             this.cfg.srv.module.load.forEach(name => {
                 const obj = this.ioc.get({
                     name,
                     type: 'module',
                     param: {
+                        // ... EXPRESS APP
                         app: this.app,
+                        // ... DATA ACCESS OBJECT 
+                        dao: this.dao,
                         opt: {
+                            // ... CONFIGURE 
                             'cfg': this.cfg.app,
+                            // ... ENV
+                            'env': this.cfg.env,
+                            'envid': this.cfg.envid,
+                            // ... PATH
                             'prj': this.path,
                             'mod': this.cfg.srv.module.path + name + "/",
                             'app': this.cfg.srv.module.path + "app/",
+                            // ... NAME
                             'name': name
                         }
                     }
                 });
 
                 if (obj) {
+                    this.dao.loadModels(this.cfg.srv.module.path + name + "/model/");
                     obj.init();
                 }
             });
         }
 
         if (this.cfg.srv.route) {
-            for(const i in this.cfg.srv.route){
+            for (const i in this.cfg.srv.route) {
                 const route = this.cfg.srv.route[i];
                 this.app[route.method](i, (req, res) => {
                     const controller = this.ioc.get(route);
@@ -98,11 +126,22 @@ class App {
         //... Allow all origin request, CORS on ExpressJS
         this.app.use(cors());
 
+        //... Allow body Parser
+        this.app.use(express.json());
+        this.app.use(express.urlencoded());
+        //this.app.use(express.multipart());
+
         //... Log requests 
         this.app.use((req, res, next) => {
             console.log(`>>> ${req.method} : ${req.path} `);
             return next();
         })
+    }
+
+    initModel() {
+        this.dao.configure(this.cfg.app);
+        this.dao.connect();
+        this.dao.loadModels(this.path + 'db/models/');
     }
 
     logRoutes() {

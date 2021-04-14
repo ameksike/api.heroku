@@ -1,8 +1,9 @@
 /*
  * @author		Antonio Membrides Espinosa
- * @date		07/05/2020
+ * @email		tonykssa@gmail.com
+ * @date		15/03/2020
  * @copyright  	Copyright (c) 2020-2030
- * @license    	GPL
+ * @license    	CPL
  * @version    	1.0
  * */
 class Module {
@@ -10,6 +11,7 @@ class Module {
     constructor(payload) {
         this.app = payload.app;
         this.opt = payload.opt;
+        this.dao = payload.dao;
 
         this.name = this.opt.name;
         this.prefix = "/" + this.name;
@@ -37,7 +39,11 @@ class Module {
             name: opt.controller,
             type: 'controller',
             module: this.name,
-            param: this.opt
+            param: {
+                opt: this.opt,
+                dao: this.dao,
+                module: this.name
+            }
         });
 
         this.app.get(_prefix, (req, res, next) => {

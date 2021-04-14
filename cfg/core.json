@@ -1,0 +1,62 @@
+{
+    "development": {
+        "port": 3003,
+        "host": "localhost",
+        "protocol": "http",
+        "log": 1,
+        "module": {
+            "load": [
+                "etl",
+                "graph"
+            ]
+        },
+        "route": {
+            "/": {
+                "method": "get",
+                "module": "etl",
+                "controller": "DefaultController",
+                "action": "home"
+            }
+        }
+    },
+    "production": {
+        "port": 3000,
+        "host": "localhost",
+        "protocol": "http",
+        "log": 1,
+        "module": {
+            "load": [
+                "etl",
+                "graph"
+            ]
+        },
+        "route": {
+            "/": {
+                "method": "get",
+                "module": "etl",
+                "controller": "DefaultController",
+                "action": "home"
+            }
+        }
+    },
+    "test": {
+        "port": 3006,
+        "host": "localhost",
+        "protocol": "http",
+        "log": 0,
+        "module": {
+            "load": [
+                "etl",
+                "graph"
+            ]
+        },
+        "route": {
+            "/": {
+                "method": "get",
+                "module": "etl",
+                "controller": "DefaultController",
+                "action": "home"
+            }
+        }
+    }
+}

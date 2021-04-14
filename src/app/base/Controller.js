@@ -1,16 +1,21 @@
 /*
  * @author		Antonio Membrides Espinosa
- * @date		07/05/2020
+ * @email		tonykssa@gmail.com
+ * @date		15/03/2020
  * @copyright  	Copyright (c) 2020-2030
- * @license    	GPL
+ * @license    	CPL
  * @version    	1.0
  * */
 class Controller {
 
-    constructor(opt) {
-        this.opt = opt;
+    constructor(payload) {
+        this.opt = payload.opt;
+        this.dao = payload.dao;
+        this.module = payload.module;
     }
 
+    init(){}
+    
     list(req, res, next) {
         res.json({ "message": "REST API mod <" + this.opt.name + "> selectAll." });
     }

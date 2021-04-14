@@ -1,8 +1,9 @@
 /*
  * @author		Antonio Membrides Espinosa
- * @date		07/05/2020
+ * @email		tonykssa@gmail.com
+ * @date		15/03/2020
  * @copyright  	Copyright (c) 2020-2030
- * @license    	GPL
+ * @license    	CPL
  * @version    	1.0
  * */
 const Module = require(__dirname + '/../app/base/Module.js');
@@ -10,6 +11,7 @@ class EtlModule extends Module {
 
     initConfig() {
         this.routes.push({ route: this.prefix + '/register', controller: 'RegisterController' });
+        this.routes.push({ route: this.prefix + '/login', controller: 'LoginController' });
         super.initConfig();
     }
 
@@ -20,7 +22,10 @@ class EtlModule extends Module {
                 name: opt.controller,
                 type: 'controller',
                 module: this.name,
-                param: this.opt
+                param: {
+                    opt: this.opt,
+                    dao: this.dao
+                }
             });
 
             this.app.get(_prefix + "/fill", (req, res, next) => {
