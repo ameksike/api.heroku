@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/apiheroku.git"
+    "url": "https://github.com/ameksike/api.heroku.git"
   },
   "keywords": [
     "datawarehouse"
@@ -20,9 +20,9 @@
   "author": "TropiPay",
   "license": "TropiPay",
   "bugs": {
-    "url": "https://github.com/apiheroku/issues"
+    "url": "https://github.com/ameksike/api.heroku/issues"
   },
-  "homepage": "https://github.com/apiheroku#readme",
+  "homepage": "https://github.com/ameksike/api.heroku#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",

@@ -31,7 +31,7 @@ class DAO {
         this.config = {};
     }
 
-    configure(payload=null) {
+    configure(payload = null) {
         this.option = payload || this.option;
         if (this.option.url) {
             this.driver = new Sequelize(this.option.url, {
@@ -39,7 +39,9 @@ class DAO {
                 protocol: this.option.protocol,
                 logging: this.option.logging,
                 dialectOptions: {
-                    ssl: true,
+                    ssl: {
+                        "rejectUnauthorized": false
+                    }
                 }
             });
         } else {
@@ -69,7 +71,9 @@ class DAO {
 
     disconnect() { }
 
-    getUri() { return ''; }
+    getUri() {
+        return `${this.option.protocol}://${this.option.username}:${this.option.password}@${this.option.host}:${this.option.port}/${this.option.database}`;
+    }
 
     loadModels(dirname) {
         if (!fs.existsSync(dirname)) {
