@@ -1,10 +1,10 @@
 {
-  "name": "api.heroku",
+  "name": "datawarehouse",
   "version": "1.0.0",
-  "description": "api.heroku",
+  "description": "datawarehouse",
   "scripts": {
     "test": "jest",
-    "start": "node ./src/app/server.js",
+    "start": "node ./bin/server.js",
     "db:migrate": "npx sequelize-cli db:migrate",
     "db:migrate:undo": "npx sequelize-cli db:migrate:undo",
     "db:migrate:status": "npx sequelize-cli db:migrate:status",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ameksike/api.heroku.git"
+    "url": "git+https://github.com/tropipay/datawarehouse.git"
   },
   "keywords": [
     "datawarehouse"
@@ -20,10 +20,11 @@
   "author": "TropiPay",
   "license": "TropiPay",
   "bugs": {
-    "url": "https://github.com/ameksike/api.heroku/issues"
+    "url": "https://github.com/tropipay/datawarehouse/issues"
   },
-  "homepage": "https://github.com/ameksike/api.heroku#readme",
+  "homepage": "https://github.com/tropipay/datawarehouse#readme",
   "dependencies": {
+    "base-64": "^1.0.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
@@ -33,7 +34,14 @@
     "pg-hstore": "^2.3.3",
     "sequelize": "^6.6.2",
     "sequelize-auto-migrations": "^1.0.2",
-    "sequelize-cli": "^5.5.0"
+    "sequelize-cli": "^5.5.0",
+    "js-sha256": "^0.9.0",
+    "js-sha512": "^0.8.0",
+    "jsonapi-serializer": "^3.6.4",
+    "jsonwebtoken": "^8.3.0",
+    "otplib": "^12.0.1",
+    "sha1": "^1.1.1",
+    "md5": "^2.2.1"
   },
   "devDependencies": {
     "jest": "^26.6.3",

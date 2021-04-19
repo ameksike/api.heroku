@@ -1,9 +1,8 @@
 /*
- * @author		Antonio Membrides Espinosa
- * @email		tonykssa@gmail.com
- * @date		15/03/2020
+ * @author		TropiPay
+ * @date		07/04/2021
  * @copyright  	Copyright (c) 2020-2030
- * @license    	CPL
+ * @license    	TropiPay
  * @version    	1.0
  * */
 const Module = require(__dirname + '/../app/base/Module.js');
@@ -12,13 +11,13 @@ class EtlModule extends Module {
     initConfig() {
         this.routes.push({ route: this.prefix + '/register', controller: 'RegisterController' });
         this.routes.push({ route: this.prefix + '/login', controller: 'LoginController' });
-        super.initConfig();
+        //... super.initConfig(); // ... for use DefaultController
     }
 
     initRoutesREST(opt) {
         if (opt.controller === 'RegisterController') {
             const _prefix = opt.route;
-            const _controller = this.ioc.get({
+            const _controller = this.helper.get({
                 name: opt.controller,
                 type: 'controller',
                 module: this.name,

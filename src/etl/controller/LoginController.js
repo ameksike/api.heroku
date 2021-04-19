@@ -1,9 +1,9 @@
 /*
  * @author		Antonio Membrides Espinosa
  * @email		tonykssa@gmail.com
- * @date		15/03/2020
+ * @date		19/04/2021
  * @copyright  	Copyright (c) 2020-2030
- * @license    	CPL
+ * @license    	GPL
  * @version    	1.0
  * */
 const Controller = require(__dirname + '/../../app/base/Controller.js');
@@ -11,7 +11,7 @@ const Controller = require(__dirname + '/../../app/base/Controller.js');
 class LoginController extends Controller {
 
     init() {
-        this.srv = this.ioc.get({
+        this.srv = this.helper.get({
             name: 'LoginService',
             type: 'service',
             module: this.module,

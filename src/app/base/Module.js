@@ -1,11 +1,12 @@
 /*
  * @author		Antonio Membrides Espinosa
  * @email		tonykssa@gmail.com
- * @date		15/03/2020
+ * @date		07/03/2020
  * @copyright  	Copyright (c) 2020-2030
- * @license    	CPL
+ * @license    	GPL
  * @version    	1.0
  * */
+
 class Module {
 
     constructor(payload) {
@@ -35,7 +36,7 @@ class Module {
 
     initRoutesREST(opt) {
         const _prefix = opt.route;
-        const _controller = this.ioc.get({
+        const _controller = this.helper.get({
             name: opt.controller,
             type: 'controller',
             module: this.name,

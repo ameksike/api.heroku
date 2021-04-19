@@ -24,7 +24,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/bin/www"
+            "program": "${workspaceFolder}/bin/server"
         },
         {
             "type": "node",

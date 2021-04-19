@@ -1,9 +1,9 @@
 /*
  * @author		Antonio Membrides Espinosa
  * @email		tonykssa@gmail.com
- * @date		15/03/2020
+ * @date		19/04/2021
  * @copyright  	Copyright (c) 2020-2030
- * @license    	CPL
+ * @license    	GPL
  * @version    	1.0
  * */
 class LoginService {
@@ -23,7 +23,24 @@ class LoginService {
 
     /**
      * 
-     * @param {*} payload 
+     * @param {*} payload {
+     *      action_type:string,
+     *      session:string,
+     *      device_id: string,
+     *      ip:string,
+     *      user_name:string,
+     *      user_id:string,
+     *      tor_account:string,
+     *      shared_account:string,
+     *      multi_geo_account:string,
+     *      lost_account:string,
+     *      inactive_account:string,
+     *      visited_before_account:string,
+     *      seen_once_account:string,
+     *      sqreen_score:string,
+     *      point_lat:string,
+     *      point_lon:string
+     * } 
      */
     async insert(payload) {
         const Login = this.dao.models['Login'];

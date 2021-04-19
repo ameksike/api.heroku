@@ -5,9 +5,9 @@ const path = require('path');
 /*
  * @author		Antonio Membrides Espinosa
  * @email		tonykssa@gmail.com
- * @date		15/03/2020
+ * @date		07/03/2020
  * @copyright  	Copyright (c) 2020-2030
- * @license    	CPL
+ * @license    	GPL
  * @version    	1.0
  * */
 class DAO {
@@ -31,17 +31,17 @@ class DAO {
         this.config = {};
     }
 
-    configure(payload = null) {
+    configure(payload=null) {
         this.option = payload || this.option;
         if (this.option.url) {
             this.driver = new Sequelize(this.option.url, {
                 dialect: this.option.dialect,
                 protocol: this.option.protocol,
                 logging: this.option.logging,
-                dialectOptions: {
-                    ssl: {
+                "dialectOptions": {
+                    "ssl": {
                         "rejectUnauthorized": false
-                    }
+                     }
                 }
             });
         } else {
@@ -71,7 +71,7 @@ class DAO {
 
     disconnect() { }
 
-    getUri() {
+    getUri() { 
         return `${this.option.protocol}://${this.option.username}:${this.option.password}@${this.option.host}:${this.option.port}/${this.option.database}`;
     }
 
