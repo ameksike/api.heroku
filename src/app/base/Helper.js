@@ -10,12 +10,7 @@ class Helper {
 
     constructor(opt = null) {
         this.opt = { src: {} };
-        this.ctrls = {
-            'controller': {},
-            'service': {},
-            'module': {},
-            'model': {}
-        }
+        this.ctrls = {};
         this.configure(opt);
         this.err = null;
     }
@@ -24,56 +19,136 @@ class Helper {
         this.opt = opt || this.opt;
     }
 
-    get(opt = {}) {
+    /**
+     * @description fill payload
+     * @param {string} opt.name [OPTIONAL] DEFAULT['DefaultService']  
+     * @param {string} opt.type [OPTIONAL] DEFAULT['instance'] VALUES['module', 'controller', 'service', 'action']
+     * @param {string} opt.module [OPTIONAL] DEFAULT['app']  
+     * @param {string} opt.dependency [OPTIONAL] DEFAULT[null]  
+     * @param {string} opt.options [OPTIONAL] DEFAULT[null]     
+     * @param {string} opt.params [OPTIONAL] DEFAULT[null]    
+     * @param {string} opt.path [OPTIONAL] DEFAULT[@opt.type]    
+     * @param {string} opt.file [OPTIONAL]    
+     * @param {string} opt.id [OPTIONAL]    
+     * @returns Object
+     */
+    fill(opt) {
         opt = opt instanceof Object ? opt : (this.opt.src[opt] || { name: opt });
         opt.name = opt.name || 'DefaultService';
-        opt.type = opt.type || 'service';
+        opt.type = opt.type || 'instance';
         opt.module = opt.module || (opt.type === 'module' ? opt.name : 'app');
-        opt.path = opt.path || opt.type;
-        opt.id = opt.id || (opt.type != 'module' ? opt.module + opt.name : opt.name);
+        opt.path = opt.path || (opt.type === 'module' ? '' : 'service');
+        opt.id = opt.id || (opt.type != 'module' ? opt.module + ':' + opt.path + ':' + opt.name : opt.name);
+        return opt;
+    }
 
+    set(value, opt = {}) {
+        opt = this.fill(opt);
+        this.ctrls[opt.type]
+        this.ctrls[opt.type] = this.ctrls[opt.type] || {};
+        this.ctrls[opt.type][opt.id] = value;
+    }
+
+    /**
+     * @description Inversion of Control Pattern (IoC)
+     * @param {string} opt.name [OPTIONAL] DEFAULT['DefaultService']  
+     * @param {string} opt.path [OPTIONAL] DEFAULT['service']    
+     * @param {string} opt.type [OPTIONAL] DEFAULT['instance'] VALUES['module', 'load', 'instance', 'action', 'raw']
+     * @param {string} opt.module [OPTIONAL] DEFAULT['app']  
+     * @param {string} opt.dependency [OPTIONAL] DEFAULT[null]  
+     * @param {string} opt.options [OPTIONAL] DEFAULT[null]     
+     * @param {string} opt.params [OPTIONAL] DEFAULT[null]    
+     * @param {string} opt.file [OPTIONAL]    
+     * @param {string} opt.id [OPTIONAL]    
+     * @returns Object
+     */
+    get(opt = {}) {
+        opt = this.fill(opt);
+        if (opt.name === 'helper') {
+            return this;
+        }
         this.ctrls[opt.type] = this.ctrls[opt.type] || {};
         if (!this.ctrls[opt.type][opt.id]) {
             this.ctrls[opt.type][opt.id] = this.process(opt);
         }
-
         return this.ctrls[opt.type][opt.id];
     }
 
+    /**
+     * @description Service Locator Pattern (SL)
+     * @param {*} opt 
+     * @returns 
+     */
     process(opt) {
-        let path = '';
-        let file = '';
-        let out = null;
-
+        let path, out = null;
         switch (opt.type) {
             case 'module':
-                path = this.opt.path;
-                opt.file = path + opt.name;
+                opt.file = opt.file || this.opt.path + opt.name;
                 out = this.instance(opt);
                 break;
 
-            case 'action':
-                path = this.opt.path + '/' + opt.module + '/';
-                opt.file = path + opt.path + '/' + opt.name + '.js';
-                out = this.instance(opt);
-                out = out[opt.action].apply(out, opt.params || []);
+            case 'raw':
+                out = opt.data;
                 break;
 
             default:
-                path = this.opt.path + '/' + opt.module + '/';
-                opt.file = path + opt.path + '/' + opt.name + '.js';
-                out = this.instance(opt);
+                path = this.opt.path;
+                path = opt.module ? path + opt.module + '/' : path;
+                path = opt.path ? path + opt.path + '/' : path;
+
+                opt.file = opt.file || this.validPath([
+                    path + opt.name + '.js',
+                    path + opt.name + '/' + opt.name + '.js',
+                    path + opt.name + '/index.js'
+                ]);
+                out = this[opt.type] ? this[opt.type](opt) : null;
                 break;
         }
         return out;
     }
 
-    instance(opt) {
+    /**
+     * @description get valid path from path list
+     * @param {array[string]} list 
+     */
+    validPath(list) {
+        const fs = require('fs');
+        for (let i in list) {
+            if (fs.existsSync(list[i])) {
+                return list[i];
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @description Factory Pattern load part 
+     * @param {*} opt 
+     * @returns {Class}
+     */
+    load(opt) {
         try {
             const Ctrt = require(opt.file);
-            const Ctrl = Ctrt[opt.name] || Ctrt;
-            const obj = new Ctrl(opt.param);
-            obj.helper = this;
+            return Ctrt[opt.name] || Ctrt;
+        }
+        catch (error) {
+            if (this.err) {
+                this.err.on(error);
+            }
+            return null;
+        }
+    }
+
+    /**
+     * @description Factory Pattern
+     * @param {*} opt 
+     * @returns 
+     */
+    instance(opt) {
+        try {
+            const target = this.load(opt);
+            let obj = (target instanceof Function) ? new target(opt.options) : target;
+            obj = this.setDI(obj, opt);
             if (obj.init) {
                 obj.init();
             }
@@ -85,6 +160,33 @@ class Helper {
             }
             return null;
         }
+    }
+
+    /**
+     * @description excecute action from object
+     * @param {*} opt 
+     * @returns {Class}
+     */
+    action(opt) {
+        const object = this.instance(opt);
+        const action = object[opt.action];
+        return (action instanceof Function) ? action.apply(object, opt.params || []) : null;
+    }
+
+    /**
+     * @description Dependency Injection Pattern (DI)
+     * @param {*} obj 
+     * @param {*} opt 
+     * @returns Object
+     */
+    setDI(obj, opt) {
+        if (!opt && !opt.dependency) {
+            return obj;
+        }
+        for (let i in opt.dependency) {
+            obj[i] = this.get(opt.dependency[i]);
+        }
+        return obj;
     }
 }
 module.exports = Helper;

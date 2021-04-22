@@ -15,28 +15,37 @@ class DefaultController extends Controller {
     }
 
     home(req, res) {
-        res.end('DEMO APP v1.0');
+        res.end('DATAWAREHOSE APP v1.0');
     }
 
     list(req, res) {
-        console.log('DefaultController-list');
-        res.end('app-DefaultController-list');
+        res.json({
+            action: 'app-DefaultController-list'
+        });
     }
 
     select(req, res) {
-        res.end('app-DefaultController-select');
+        res.json({
+            action: 'app-DefaultController-select'
+        });
     }
 
     insert(req, res) {
-        res.end('app-DefaultController-insert');
+        res.json({
+            action: 'app-DefaultController-insert'
+        });
     }
 
     update(req, res) {
-        res.end('app-DefaultController-update');
+        res.json({
+            action: 'app-DefaultController-update'
+        });
     }
 
     delete(req, res) {
-        res.end('app-DefaultController-delete');
+        res.json({
+            action: 'app-DefaultController-delete'
+        });
     }
 }
 module.exports = DefaultController;

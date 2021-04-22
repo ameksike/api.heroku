@@ -5,57 +5,63 @@
  * @copyright  	Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.0
+ * @dependencies express cors dotenv Helper
  * */
 const express = require("express");
 const cors = require('cors');
 const dotenv = require('dotenv');
 
-const ErrorHandler = require(__dirname + '/ErrorHandler.js');
-const Helper = require(__dirname + '/Helper.js');
-const DAO = require(__dirname + '/DAO.js');
+const ErrorHandler = require('./ErrorHandler.js');
+const Helper = require('./Helper.js');
+const Logger = require('./Logger.js');
 
 class AppWEB {
 
     constructor(path) {
         this.option = { app: {}, srv: {} };
         this.path = path;
-        this.app = express();
+        this.web = express();
         this.mod = [];
         this.cfg = {};
-        this.err = new ErrorHandler();
+        this.error = new ErrorHandler();
         this.helper = new Helper();
-        this.dao = new DAO();
-        this.helper.err = this.err;
+        this.logger = new Logger();
     }
 
     init() {
         try {
-            this.loadConfig();
+            this.initConfig();
             this.initApp();
-            this.initModel();
-            this.loadModules();
+            this.initModels();
+            this.initModules();
+            this.initRoutes();
         } catch (error) {
-            if (this.err) {
-                this.err.on(error);
+            if (this.error) {
+                this.error.on(error);
             }
         }
         return this;
     }
 
     run() {
-        const port = this.cfg.srv.port;
-        return this.app.listen(port, () => {
+        return this.web.listen(this.cfg.srv.port, () => {
+            this.logger.log(`>>> SERVER: ${this.cfg.srv.protocol}://${this.cfg.srv.host}:${this.cfg.srv.port}`);
             if (this.cfg.srv.log === 1) {
-                console.log(
-                    ">>> SERVER: " +
-                    this.cfg.srv.protocol + "://" + this.cfg.srv.host + ":" + port
-                );
                 this.logRoutes();
             }
         });
     }
 
-    loadConfig() {
+    stop() {
+        if (this.dao) {
+            this.dao.disconnect();
+        }
+        if (this.web) {
+            this.web.close();
+        }
+    }
+
+    initConfig() {
         dotenv.config();
         const envid = process.env.NODE_ENV || 'development';
         const app = require(this.path + 'cfg/config.json') || {};
@@ -73,19 +79,53 @@ class AppWEB {
 
         this.cfg.app.url = this.cfg.env.DATABASE_URL;
         this.cfg.app.logging = this.cfg.srv.log > 0;
+        this.error.configure({ level: this.cfg.srv.log });
+        this.logger.configure({ level: this.cfg.srv.log });
         this.helper.configure({ path: this.cfg.srv.module.path, src: this.cfg.srv.helper });
-        this.err.configure({ level: this.cfg.srv.log });
+        this.helper.err = this.error;
+        this.helper.set(this.logger, { name: 'logger', type: 'instance', module: 'app' });
+        this.helper.set(this.error, { name: 'error', type: 'instance', module: 'app' });
     }
 
-    loadModules() {
+    initApp() {
+        //... Set Error Handler
+        this.web.use((err, req, res, next) => {
+            this.error.on(err, req, res, next);
+        });
+
+        //... Allow all origin request, CORS on ExpressJS
+        this.web.use(cors());
+
+        //... Allow body Parser
+        this.web.use(express.json());
+        this.web.use(express.urlencoded());
+        //this.web.use(express.multipart());
+
+        //... Log requests 
+        this.web.use((req, res, next) => {
+            this.logger.log(`>>> ${req.method} : ${req.path} `);
+            return next();
+        })
+    }
+
+    initModels() {
+        this.dao = this.helper.get(this.cfg.srv.dao);
+        if (this.dao) {
+            this.dao.configure(this.cfg.app);
+            this.dao.connect();
+            this.dao.loadModels(this.path + 'db/models/');
+        }
+    }
+
+    initModules() {
         if (this.cfg.srv.module && this.cfg.srv.module.load) {
             this.cfg.srv.module.load.forEach(name => {
                 const obj = this.helper.get({
                     name,
                     type: 'module',
-                    param: {
+                    options: {
                         // ... EXPRESS APP
-                        app: this.app,
+                        app: this.web,
                         // ... DATA ACCESS OBJECT 
                         dao: this.dao,
                         opt: {
@@ -101,62 +141,41 @@ class AppWEB {
                             // ... NAME
                             'name': name
                         }
+                    },
+                    dependency: {
+                        'helper': 'helper'
                     }
                 });
 
-                if (obj) {
+                if (obj && this.dao) {
                     this.dao.loadModels(this.cfg.srv.module.path + name + "/model/");
-                    obj.init();
                 }
             });
         }
+    }
 
+    initRoutes() {
         if (this.cfg.srv.route) {
             for (const i in this.cfg.srv.route) {
                 const route = this.cfg.srv.route[i];
-                this.app[route.method](i, (req, res) => {
-                    route.type = route.type || 'controller';
-                    route.name = route.name || route.controller;
-                    const controller = this.helper.get(route);
-                    if (!controller || !controller[route.action]) {
-                        throw `Error << '${route.module}:${route.controller}:${route.action}'`;
-                    }
-                    controller[route.action](req, res);
-                });
+                if (this.web[route.method]) {
+                    this.web[route.method](i, (req, res) => {
+                        route.path = route.path || 'controller';
+                        route.name = route.name || route.controller;
+                        const controller = this.helper.get(route);
+                        if (!controller || !controller[route.action]) {
+                            throw `Error << '${route.module}:${route.controller}:${route.action}'`;
+                        }
+                        controller[route.action](req, res);
+                    });
+                }
             }
         }
 
-        this.app.get('*', (req, res) => {
-            console.log(`>>! ${req.method} : ${req.path} `);
+        this.web.get('*', (req, res) => {
+            this.logger.log(`>>! ${req.method} : ${req.path} `);
             res.end('');
         });
-    }
-
-    initApp() {
-        //... Set Error Handler
-        this.app.use((err, req, res, next) => {
-            this.err.on(err, req, res, next);
-        });
-
-        //... Allow all origin request, CORS on ExpressJS
-        this.app.use(cors());
-
-        //... Allow body Parser
-        this.app.use(express.json());
-        this.app.use(express.urlencoded());
-        //this.app.use(express.multipart());
-
-        //... Log requests 
-        this.app.use((req, res, next) => {
-            console.log(`>>> ${req.method} : ${req.path} `);
-            return next();
-        })
-    }
-
-    initModel() {
-        this.dao.configure(this.cfg.app);
-        this.dao.connect();
-        this.dao.loadModels(this.path + 'db/models/');
     }
 
     logRoutes() {
@@ -188,7 +207,7 @@ class AppWEB {
             }
         }
 
-        this.app._router.stack.forEach(print.bind(null, []))
+        this.web._router.stack.forEach(print.bind(null, []))
     }
 }
 

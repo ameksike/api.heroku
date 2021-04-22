@@ -13,9 +13,9 @@ class LoginController extends Controller {
     init() {
         this.srv = this.helper.get({
             name: 'LoginService',
-            type: 'service',
+            path: 'service',
             module: this.module,
-            param: {
+            options: {
                 opt: this.opt,
                 dao: this.dao
             }

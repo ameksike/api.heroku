@@ -1,6 +1,11 @@
 const App = require(__dirname + "/../base/AppWEB.js");
-const app = new App(__dirname + "/../../../");
-app.init();
+const app = new App(__dirname + "/../../../").init();
+const web = app.web;
+
+const supertest = require('supertest');
+const req = supertest(web);
+
+const baseUrl = '/app';
 const models = {};
 
 describe('APP controller', () => {
@@ -17,60 +22,22 @@ describe('APP controller', () => {
         for (let i in models) {
             models[i].destroy();
         }
+        web.stop();
     });
 
-    it("should a valid call for App's crypto service ", (done) => {
-        const cripto = app.helper.get('Crypto');
-        const data = cripto.encode("this is a demo");
-        expect(data).toBe('dGhpcyBpcyBhIGRlbW8=');
-        done();
+    it("should a valid call action:controller", (done) => {
+        req
+            .get(baseUrl)
+            .send({
+                "version": '2.1',
+            })
+            .end((error, res) => {
+                expect(res.statusCode).toBe(200);
+                expect(res.body).toBeInstanceOf(Object);
+                expect(res.body.action).toBe('app-DefaultController-list');
+                done();
+            });
     });
-
-    it("should a valid call for App's crypto service by alias on core.json ", (done) => {
-        const cripto = app.helper.get('Demo');
-        const data = cripto.encode("this is a demo");
-        expect(cripto).toBeInstanceOf(Object);
-        expect(data).toBe('dGhpcyBpcyBhIGRlbW8=');
-        done();
-    });
-
-    it("should a valid call for Etl's service", (done) => {
-        const srv = app.helper.get({
-            name: 'EtlService',
-            module: 'etl',
-            param: { status: 'success' }
-        });
-        expect(srv).toBeInstanceOf(Object);
-        done();
-    });
-
-    it("should a valid call for Etl's controller", (done) => {
-        const srv = app.helper.get({
-            name: 'LoginController',
-            type: 'controller',
-            module: 'etl',
-            param: {
-                opt: app.cfg,
-                dao: {
-                    // ... CONFIGURE 
-                    'cfg': app.cfg.app,
-                    // ... ENV
-                    'env': app.cfg.env,
-                    'envid': app.cfg.envid,
-                    // ... PATH
-                    'prj': app.path,
-                    'mod': app.cfg.srv.module.path + name + "/",
-                    'app': app.cfg.srv.module.path + "app/",
-                    // ... NAME
-                    'name': 'etl'
-                }
-            }
-        });
-        expect(srv).toBeInstanceOf(Object);
-        done();
-    });
-
-
 
 });
 

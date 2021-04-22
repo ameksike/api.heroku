@@ -1,4 +1,3 @@
-
 const Sequelize = require('sequelize');
 const fs = require('fs');
 const path = require('path');
@@ -9,8 +8,9 @@ const path = require('path');
  * @copyright  	Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.0
+ * @dependencies sequelize fs path
  * */
-class DAO {
+class DAOSequelize {
 
     constructor(opt) {
         this.models = {};
@@ -31,7 +31,7 @@ class DAO {
         this.config = {};
     }
 
-    configure(payload=null) {
+    configure(payload = null) {
         this.option = payload || this.option;
         if (this.option.url) {
             this.driver = new Sequelize(this.option.url, {
@@ -41,7 +41,7 @@ class DAO {
                 "dialectOptions": {
                     "ssl": {
                         "rejectUnauthorized": false
-                     }
+                    }
                 }
             });
         } else {
@@ -63,15 +63,18 @@ class DAO {
             if (!!error) {
                 this.onError(error);
             } else {
-                this.onConnect();
+                this.onConnect(this.option);
             }
         });
         return this;
     }
 
-    disconnect() { }
+    disconnect() {
+        this.driver.close();
+        return this;
+    }
 
-    getUri() { 
+    getUri() {
         return `${this.option.protocol}://${this.option.username}:${this.option.password}@${this.option.host}:${this.option.port}/${this.option.database}`;
     }
 
@@ -95,6 +98,7 @@ class DAO {
                 this.models[modelName].associate(this.models);
             }
         });
+        return this;
     }
 
     onError(error) {
@@ -105,11 +109,11 @@ class DAO {
 
     }
 
-    onConnect() {
+    onConnect(option) {
         if (this.option.logging) {
             console.log('>>> DAO data base connect success');
             console.log(this.option);
         }
     }
 }
-module.exports = DAO;
+module.exports = DAOSequelize;

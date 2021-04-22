@@ -1,6 +1,5 @@
 const App = require(__dirname + "/../../app/base/AppWEB.js");
-const app = new App(__dirname + "/../../../");
-app.init();
+const app = new App(__dirname + "/../../../").init();
 const models = {};
 
 describe('Login controller', () => {

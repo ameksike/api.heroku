@@ -49,6 +49,12 @@ class LoginService {
         });
         return data;
     }
+    
+    update(req, res) {
+        res.json({
+            action: 'app-DefaultController-update'
+        });
+    }
 }
 
 module.exports = LoginService;

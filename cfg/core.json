@@ -1,13 +1,21 @@
 {
     "development": {
-        "port": 3003,
+        "port": 3031,
         "host": "localhost",
         "protocol": "http",
         "log": 1,
         "module": {
             "load": [
-                "etl"
+                "etl",
+                "app"
             ]
+        },
+        "dao": {
+            "name": "DAOSequelize",
+            "path": "service/DAO",
+            "dependency": {
+                "helper": "helper"
+            }
         },
         "route": {
             "/": {
@@ -21,7 +29,7 @@
             "Demo": {
                 "name": "Crypto",
                 "module": "app",
-                "type": "service"
+                "path": "service"
             }
         }
     },
@@ -35,6 +43,13 @@
                 "etl"
             ]
         },
+        "dao": {
+            "name": "DAOSequelize",
+            "path": "service/DAO",
+            "dependency": {
+                "helper": "helper"
+            }
+        },
         "route": {
             "/": {
                 "method": "get",
@@ -47,19 +62,27 @@
             "Demo": {
                 "name": "Cripto",
                 "module": "app",
-                "type": "service"
+                "path": "service"
             }
         }
     },
     "test": {
-        "port": 3006,
+        "port": 3031,
         "host": "localhost",
         "protocol": "http",
         "log": 0,
         "module": {
             "load": [
-                "etl"
+                "etl",
+                "app"
             ]
+        },
+        "dao": {
+            "name": "DAOSequelize",
+            "path": "service/DAO",
+            "dependency": {
+                "helper": "helper"
+            }
         },
         "route": {
             "/": {
@@ -73,7 +96,7 @@
             "Demo": {
                 "name": "Crypto",
                 "module": "app",
-                "type": "service"
+                "path": "service"
             }
         }
     }

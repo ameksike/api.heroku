@@ -38,12 +38,15 @@ class Module {
         const _prefix = opt.route;
         const _controller = this.helper.get({
             name: opt.controller,
-            type: 'controller',
+            path: 'controller',
             module: this.name,
-            param: {
+            options: {
                 opt: this.opt,
                 dao: this.dao,
                 module: this.name
+            },
+            dependency: {
+                'helper': 'helper'
             }
         });
 

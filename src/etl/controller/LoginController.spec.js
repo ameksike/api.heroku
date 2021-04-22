@@ -1,12 +1,13 @@
+const App = require(__dirname + "/../../app/base/AppWEB.js");
+const app = new App(__dirname + "/../../../").init();
 const models = {};
 
 describe('Login controller', () => {
     beforeAll(async () => {
 
-        jest.useFakeTimers();
-
         try {
-            //await db.sequelize.sync({ force: true });
+            // jest.useFakeTimers();
+            // await db.sequelize.sync({ force: true });
 
             const data = {
                 "action_type": "login",
@@ -35,6 +36,7 @@ describe('Login controller', () => {
         for (let i in models) {
             models[i].destroy();
         }
+        //app.stop();
     });
 
     it('should valid getServiceFee form service setting', async (done) => {
