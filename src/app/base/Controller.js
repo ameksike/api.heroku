@@ -10,7 +10,6 @@ class Controller {
 
     constructor(payload) {
         this.opt = payload && payload.opt ? payload.opt : {};
-        this.dao = payload && payload.dao ? payload.dao : {};
         this.module = payload && payload.module ? payload.module : {};
     }
 

@@ -10,13 +10,6 @@
                 "app"
             ]
         },
-        "dao": {
-            "name": "DAOSequelize",
-            "path": "service/DAO",
-            "dependency": {
-                "helper": "helper"
-            }
-        },
         "route": {
             "/": {
                 "method": "get",
@@ -30,6 +23,16 @@
                 "name": "Crypto",
                 "module": "app",
                 "path": "service"
+            },
+            "DAOSequelize": {
+                "path": "service/DAO",
+                "dependency": {
+                    "helper": "helper"
+                }
+            },
+            "dao": {
+                "type": "alias",
+                "source": "DAOSequelize"
             }
         }
     },
@@ -40,15 +43,9 @@
         "log": 1,
         "module": {
             "load": [
-                "etl"
+                "etl",
+                "app"
             ]
-        },
-        "dao": {
-            "name": "DAOSequelize",
-            "path": "service/DAO",
-            "dependency": {
-                "helper": "helper"
-            }
         },
         "route": {
             "/": {
@@ -63,6 +60,13 @@
                 "name": "Cripto",
                 "module": "app",
                 "path": "service"
+            },
+            "dao": {
+                "name": "DAOSequelize",
+                "path": "service/DAO",
+                "dependency": {
+                    "helper": "helper"
+                }
             }
         }
     },
@@ -77,13 +81,6 @@
                 "app"
             ]
         },
-        "dao": {
-            "name": "DAOSequelize",
-            "path": "service/DAO",
-            "dependency": {
-                "helper": "helper"
-            }
-        },
         "route": {
             "/": {
                 "method": "get",
@@ -97,6 +94,13 @@
                 "name": "Crypto",
                 "module": "app",
                 "path": "service"
+            },
+            "dao": {
+                "name": "DAOSequelize",
+                "path": "service/DAO",
+                "dependency": {
+                    "helper": "helper"
+                }
             }
         }
     }

@@ -109,11 +109,11 @@ class AppWEB {
     }
 
     initModels() {
-        this.dao = this.helper.get(this.cfg.srv.dao);
+        this.dao = this.helper.get('dao');
         if (this.dao) {
             this.dao.configure(this.cfg.app);
             this.dao.connect();
-            this.dao.loadModels(this.path + 'db/models/');
+            this.dao.load(this.path + 'db/models/');
         }
     }
 
@@ -142,13 +142,11 @@ class AppWEB {
                             'name': name
                         }
                     },
-                    dependency: {
-                        'helper': 'helper'
-                    }
+                    dependency: { 'helper': 'helper', 'dao': 'dao' }
                 });
 
                 if (obj && this.dao) {
-                    this.dao.loadModels(this.cfg.srv.module.path + name + "/model/");
+                    this.dao.load(this.cfg.srv.module.path + name + "/model/");
                 }
             });
         }

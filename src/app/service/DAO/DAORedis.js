@@ -69,7 +69,7 @@ class DAORedis {
         return `${this.option.protocol}://${this.option.username}:${this.option.password}@${this.option.host}:${this.option.port}/${this.option.database}`;
     }
 
-    loadModels(dirname) { }
+    load(dirname) { }
 
     onError(error) {
         const message = error.message ? error.message : error;

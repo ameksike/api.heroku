@@ -20,26 +20,28 @@ class Helper {
     }
 
     /**
-     * @description fill payload
+     * @description Fill payload
      * @param {string} opt.name [OPTIONAL] DEFAULT['DefaultService']  
-     * @param {string} opt.type [OPTIONAL] DEFAULT['instance'] VALUES['module', 'controller', 'service', 'action']
+     * @param {string} opt.type [OPTIONAL] DEFAULT['instance'] VALUES['module', 'type', 'instance', 'action', 'raw', 'alias']
      * @param {string} opt.module [OPTIONAL] DEFAULT['app']  
      * @param {string} opt.dependency [OPTIONAL] DEFAULT[null]  
-     * @param {string} opt.options [OPTIONAL] DEFAULT[null]     
-     * @param {string} opt.params [OPTIONAL] DEFAULT[null]    
+     * @param {any}    opt.options [OPTIONAL] DEFAULT[null] only for opt.type ['instance', 'action', 'raw']    
+     * @param {string} opt.source [OPTIONAL] DEFAULT['default'] only for opt.type 'alias'   
+     * @param {any}    opt.params [OPTIONAL] DEFAULT[null] only for opt.type 'action'  
      * @param {string} opt.path [OPTIONAL] DEFAULT[@opt.type]    
      * @param {string} opt.file [OPTIONAL]    
      * @param {string} opt.id [OPTIONAL]    
      * @returns Object
      */
     fill(opt) {
-        opt = opt instanceof Object ? opt : (this.opt.src[opt] || { name: opt });
-        opt.name = opt.name || 'DefaultService';
-        opt.type = opt.type || 'instance';
-        opt.module = opt.module || (opt.type === 'module' ? opt.name : 'app');
-        opt.path = opt.path || (opt.type === 'module' ? '' : 'service');
-        opt.id = opt.id || (opt.type != 'module' ? opt.module + ':' + opt.path + ':' + opt.name : opt.name);
-        return opt;
+        const cfg = opt instanceof Object ? opt : (this.opt.src[opt] || { name: opt });
+        cfg.name = cfg.name || (typeof (opt) === 'string' ? opt : 'DefaultService');
+        cfg.type = cfg.type || 'instance';
+        cfg.source = cfg.source || 'default';
+        cfg.module = cfg.module || (cfg.type === 'module' ? cfg.name : 'app');
+        cfg.path = cfg.path || (cfg.type === 'module' ? '' : 'service');
+        cfg.id = cfg.id || (cfg.type != 'module' ? cfg.module + ':' + cfg.path + ':' + cfg.name : cfg.name);
+        return cfg;
     }
 
     set(value, opt = {}) {
@@ -52,15 +54,16 @@ class Helper {
     /**
      * @description Inversion of Control Pattern (IoC)
      * @param {string} opt.name [OPTIONAL] DEFAULT['DefaultService']  
-     * @param {string} opt.path [OPTIONAL] DEFAULT['service']    
-     * @param {string} opt.type [OPTIONAL] DEFAULT['instance'] VALUES['module', 'load', 'instance', 'action', 'raw']
+     * @param {string} opt.type [OPTIONAL] DEFAULT['instance'] VALUES['module', 'type', 'instance', 'action', 'raw', 'alias']
      * @param {string} opt.module [OPTIONAL] DEFAULT['app']  
      * @param {string} opt.dependency [OPTIONAL] DEFAULT[null]  
-     * @param {string} opt.options [OPTIONAL] DEFAULT[null]     
-     * @param {string} opt.params [OPTIONAL] DEFAULT[null]    
+     * @param {any}    opt.options [OPTIONAL] DEFAULT[null] only for opt.type ['instance', 'action', 'raw']    
+     * @param {string} opt.source [OPTIONAL] DEFAULT['default'] only for opt.type 'alias'   
+     * @param {any}    opt.params [OPTIONAL] DEFAULT[null] only for opt.type 'action'  
+     * @param {string} opt.path [OPTIONAL] DEFAULT[@opt.type]    
      * @param {string} opt.file [OPTIONAL]    
      * @param {string} opt.id [OPTIONAL]    
-     * @returns Object
+     * @returns {any}
      */
     get(opt = {}) {
         opt = this.fill(opt);
@@ -88,7 +91,11 @@ class Helper {
                 break;
 
             case 'raw':
-                out = opt.data;
+                out = opt.options;
+                break;
+
+            case 'alias':
+                out = this.get(opt.source);
                 break;
 
             default:
@@ -122,11 +129,11 @@ class Helper {
     }
 
     /**
-     * @description Factory Pattern load part 
+     * @description Factory Pattern load Type 
      * @param {*} opt 
      * @returns {Class}
      */
-    load(opt) {
+    type(opt) {
         try {
             const Ctrt = require(opt.file);
             return Ctrt[opt.name] || Ctrt;
@@ -146,7 +153,7 @@ class Helper {
      */
     instance(opt) {
         try {
-            const target = this.load(opt);
+            const target = this.type(opt);
             let obj = (target instanceof Function) ? new target(opt.options) : target;
             obj = this.setDI(obj, opt);
             if (obj.init) {

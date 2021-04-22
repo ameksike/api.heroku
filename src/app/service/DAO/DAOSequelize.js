@@ -78,8 +78,8 @@ class DAOSequelize {
         return `${this.option.protocol}://${this.option.username}:${this.option.password}@${this.option.host}:${this.option.port}/${this.option.database}`;
     }
 
-    loadModels(dirname) {
-        if (!fs.existsSync(dirname)) {
+    load(dirname) {
+        if (!this.driver || !fs.existsSync(dirname)) {
             return;
         }
 

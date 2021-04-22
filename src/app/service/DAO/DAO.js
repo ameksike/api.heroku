@@ -37,7 +37,7 @@ class DAO {
         return this;
     }
 
-    loadModels(dirname) { 
+    load(dirname) { 
         return this;
     }
 

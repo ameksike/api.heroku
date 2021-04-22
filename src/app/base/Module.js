@@ -12,7 +12,6 @@ class Module {
     constructor(payload) {
         this.app = payload.app;
         this.opt = payload.opt;
-        this.dao = payload.dao;
 
         this.name = this.opt.name;
         this.prefix = "/" + this.name;
@@ -42,12 +41,9 @@ class Module {
             module: this.name,
             options: {
                 opt: this.opt,
-                dao: this.dao,
                 module: this.name
             },
-            dependency: {
-                'helper': 'helper'
-            }
+            dependency: { 'helper': 'helper', 'dao': 'dao' }
         });
 
         this.app.get(_prefix, (req, res, next) => {
