@@ -12,8 +12,8 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 
 const ErrorHandler = require('./ErrorHandler.js');
-const Helper = require('./Helper.js');
 const Logger = require('./Logger.js');
+const KsDp = require('ksdp');
 
 class AppWEB {
 
@@ -23,8 +23,9 @@ class AppWEB {
         this.web = express();
         this.mod = [];
         this.cfg = {};
+
         this.error = new ErrorHandler();
-        this.helper = new Helper();
+        this.helper = new KsDp.integration.IoC();
         this.logger = new Logger();
     }
 
@@ -81,8 +82,12 @@ class AppWEB {
         this.cfg.app.logging = this.cfg.srv.log > 0;
         this.error.configure({ level: this.cfg.srv.log });
         this.logger.configure({ level: this.cfg.srv.log });
-        this.helper.configure({ path: this.cfg.srv.module.path, src: this.cfg.srv.helper });
-        this.helper.err = this.error;
+        this.helper.configure({ 
+            path: this.cfg.srv.module.path, 
+            src: this.cfg.srv.helper, 
+            error: this.error,
+            name: 'helper' 
+        });
         this.helper.set(this.logger, { name: 'logger', type: 'instance', module: 'app' });
         this.helper.set(this.error, { name: 'error', type: 'instance', module: 'app' });
     }
