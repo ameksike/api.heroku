@@ -6,7 +6,7 @@
     "configurations": [
         {
             "type": "node",
-            "name": "vscode-jest-tests",
+            "name": "TEST",
             "request": "launch",
             "program": "${workspaceFolder}/node_modules/jest/bin/jest",
             "args": [
@@ -20,31 +20,32 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Main Program",
+            "name": "API",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/bin/server"
+            "program": "${workspaceFolder}/bin/server.js"
         },
         {
             "type": "node",
             "request": "launch",
-            "name": "Worker",
+            "name": "WORKER",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/queue/engine.js"
+            "program": "${workspaceFolder}/bin/server.js"
         },
         {
             "type": "node",
             "request": "launch",
-            "name": "Worker_migrate",
-            "runtimeExecutable": "npm", //change this to your npm path
-            "runtimeArgs": [
-                "run-script",
-                "workers",
+            "name": "WORKER MIGRATE",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "args": [
                 "migration"
             ],
+            "program": "${workspaceFolder}/bin/server.js"
         },
     ]
 }
