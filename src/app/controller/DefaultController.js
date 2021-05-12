@@ -14,7 +14,7 @@ class DefaultController extends KsMf.app.Controller {
     }
 
     home(req, res) {
-        res.end('DATAWAREHOSE APP v1.0');
+        res.end('DEMO APP v1.0');
     }
 
     list(req, res) {
