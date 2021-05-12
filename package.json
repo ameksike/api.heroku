@@ -2,6 +2,7 @@
   "name": "api.heroku",
   "version": "1.0.0",
   "description": "api.heroku",
+  "main": "bin/server.js",
   "scripts": {
     "test": "jest",
     "start": "node ./bin/server.js",
