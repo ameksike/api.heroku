@@ -6,9 +6,8 @@
  * @license    	GPL
  * @version    	1.0
  * */
-const Controller = require(__dirname + '/../base/Controller.js');
-
-class DefaultController extends Controller {
+const KsMf = require('ksmf');
+class DefaultController extends KsMf.app.Controller {
 
     constructor(opt) {
         super(opt);
@@ -21,30 +20,6 @@ class DefaultController extends Controller {
     list(req, res) {
         res.json({
             action: 'app-DefaultController-list'
-        });
-    }
-
-    select(req, res) {
-        res.json({
-            action: 'app-DefaultController-select'
-        });
-    }
-
-    insert(req, res) {
-        res.json({
-            action: 'app-DefaultController-insert'
-        });
-    }
-
-    update(req, res) {
-        res.json({
-            action: 'app-DefaultController-update'
-        });
-    }
-
-    delete(req, res) {
-        res.json({
-            action: 'app-DefaultController-delete'
         });
     }
 }

@@ -6,8 +6,8 @@
  * @license    	GPL
  * @version    	1.0
  * */
-const Module = require(__dirname + '/base/Module.js');
-class AppModule extends Module {
+const KsMf = require('ksmf');
+class AppModule extends KsMf.app.Module {
 
 }
 module.exports = AppModule;

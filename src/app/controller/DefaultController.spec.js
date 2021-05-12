@@ -1,5 +1,6 @@
-const App = require(__dirname + "/../base/AppWEB.js");
-const app = new App(__dirname + "/../../../").init();
+const KsMf = require('ksmf');
+const app = new KsMf.app.WEB(__dirname + "/../../../").init();
+
 const web = app.web;
 
 const supertest = require('supertest');

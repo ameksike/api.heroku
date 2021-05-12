@@ -1,5 +1,5 @@
-const App = require(__dirname + "/../base/AppWEB.js");
-const app = new App(__dirname + "/../../../").init();
+const KsMf = require('ksmf');
+const app = new KsMf.app.WEB(__dirname + "/../../../").init();
 
 describe('APP controller', () => {
     beforeAll(async () => { });
@@ -18,16 +18,6 @@ describe('APP controller', () => {
         const data = cripto.encode("this is a demo");
         expect(cripto).toBeInstanceOf(Object);
         expect(data).toBe('dGhpcyBpcyBhIGRlbW8=');
-        done();
-    });
-
-    it("should a valid call for Etl's service", (done) => {
-        const srv = app.helper.get({
-            name: 'EtlService',
-            module: 'etl',
-            options: { status: 'success' }
-        });
-        expect(srv).toBeInstanceOf(Object);
         done();
     });
 

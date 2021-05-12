@@ -7,7 +7,12 @@
         "module": {
             "load": [
                 "etl",
-                "app"
+                "app",
+                {
+                    "name": "ksmf",
+                    "type": "lib",
+                    "namespace": "task.Cron"
+                }
             ]
         },
         "route": {
@@ -19,22 +24,41 @@
             }
         },
         "helper": {
-            "Demo": {
-                "name": "Crypto",
-                "module": "app",
-                "path": "service"
-            },
-            "DAOSequelize": {
-                "path": "service/DAO",
+            "sequelize": {
+                "name": "ksmf",
+                "type": "lib",
+                "namespace": "dao.Sequelize",
                 "dependency": {
                     "helper": "helper"
                 }
             },
             "dao": {
                 "type": "alias",
-                "source": "DAOSequelize"
+                "source": "sequelize"
+            },
+            "error": {
+                "name": "ksmf",
+                "type": "lib",
+                "namespace": "app.Error"
+            },
+            "logger": {
+                "name": "ksmf",
+                "type": "lib",
+                "namespace": "app.Logger"
             }
-        }
+        },
+        "cron": [
+            {
+                "env": "SCHEDULE_RETRIVE_DATA",
+                "value": "0/1 * * * *",
+                "target": {
+                    "type": "action",
+                    "module": "etl",
+                    "name": "LoginService",
+                    "action": "dailyProcessing"
+                }
+            }
+        ]
     },
     "production": {
         "port": 3000,
@@ -44,7 +68,12 @@
         "module": {
             "load": [
                 "etl",
-                "app"
+                "app",
+                {
+                    "name": "ksmf",
+                    "type": "lib",
+                    "namespace": "task.Cron"
+                }
             ]
         },
         "route": {
@@ -56,19 +85,45 @@
             }
         },
         "helper": {
-            "Demo": {
-                "name": "Cripto",
-                "module": "app",
-                "path": "service"
-            },
-            "dao": {
-                "name": "DAOSequelize",
-                "path": "service/DAO",
+            "sequelize": {
+                "name": "ksmf",
+                "type": "lib",
+                "namespace": "dao.Sequelize",
                 "dependency": {
                     "helper": "helper"
                 }
+            },
+            "dao": {
+                "name": "ksmf",
+                "type": "lib",
+                "namespace": "dao.Sequelize",
+                "dependency": {
+                    "helper": "helper"
+                }
+            },
+            "error": {
+                "name": "ksmf",
+                "type": "lib",
+                "namespace": "app.Error"
+            },
+            "logger": {
+                "name": "ksmf",
+                "type": "lib",
+                "namespace": "app.Logger"
             }
-        }
+        },
+        "cron": [
+            {
+                "env": "SCHEDULE_RETRIVE_DATA",
+                "value": "0/1 * * * *",
+                "target": {
+                    "type": "action",
+                    "module": "etl",
+                    "name": "LoginService",
+                    "action": "dailyProcessing"
+                }
+            }
+        ]
     },
     "test": {
         "port": 3031,
