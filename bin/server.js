@@ -6,6 +6,11 @@
  * @license    	GPL
  * @version    	1.0
  * */
-const KsMf = require('ksmf');
-const app = new KsMf.app.WEB(__dirname + "/../");
-module.exports = app.init().run();
+try {
+    const KsMf = require('ksmf');
+    const app = new KsMf.app.WEB(__dirname + "/../");
+    module.exports = app.init().run();
+}
+catch (error) {
+    console.log('[ERROR]', error);
+}

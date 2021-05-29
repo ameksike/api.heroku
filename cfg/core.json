@@ -1,9 +1,9 @@
 {
     "development": {
-        "port": 3031,
+        "port": 3030,
         "host": "localhost",
         "protocol": "http",
-        "log": 1,
+        "log": 2,
         "module": {
             "load": [
                 "app",
@@ -22,6 +22,11 @@
                 "action": "home"
             }
         },
+        "event": {
+            "onInitConfig": ["dao.wrapper"],
+            "onInitModules": ["dao.wrapper"],
+            "onLoadModule": ["dao.wrapper"]
+        },
         "helper": {
             "sequelize": {
                 "name": "ksmf",
@@ -32,8 +37,21 @@
                 }
             },
             "dao": {
-                "type": "alias",
-                "source": "sequelize"
+                "name": "ksmf",
+                "type": "lib",
+                "namespace": "dao.Sequelize",
+                "dependency": {
+                    "helper": "helper"
+                }
+            },
+            "dao.wrapper": {
+                "name": "ksmf",
+                "type": "lib",
+                "params": { "exclude": ["forest"] },
+                "namespace": "dao.Wrapper",
+                "dependency": {
+                    "helper": "helper"
+                }
             },
             "error": {
                 "name": "ksmf",
@@ -44,26 +62,37 @@
                 "name": "ksmf",
                 "type": "lib",
                 "namespace": "app.Logger"
-            }
-        },
-        "cron": [
-            {
-                "env": "SCHEDULE_RETRIVE_DATA",
-                "value": "0/1 * * * *",
-                "target": {
-                    "type": "action",
-                    "module": "etl",
-                    "name": "LoginService",
-                    "action": "dailyProcessing"
+            },
+            "logger.class": {
+                "name": "ksmf",
+                "type": "package",
+                "namespace": "app.Logger"
+            },
+            "auth": {
+                "name": "Authenticator",
+                "path": "service",
+                "dependency": {
+                    "helper": "helper",
+                    "app": "app"
                 }
             }
-        ]
+        },
+        "cron": [{
+            "env": "SCHEDULE_RETRIVE_DATA",
+            "value": "0/1 * * * *",
+            "target": {
+                "type": "action",
+                "module": "etl",
+                "name": "LoginService",
+                "action": "dailyProcessing"
+            }
+        }]
     },
     "production": {
         "port": 3000,
         "host": "localhost",
         "protocol": "http",
-        "log": 1,
+        "log": 2,
         "module": {
             "load": [
                 "app",
@@ -82,6 +111,11 @@
                 "action": "home"
             }
         },
+        "event": {
+            "onInitConfig": ["dao.wrapper"],
+            "onInitModules": ["dao.wrapper"],
+            "onLoadModule": ["dao.wrapper"]
+        },
         "helper": {
             "sequelize": {
                 "name": "ksmf",
@@ -99,6 +133,15 @@
                     "helper": "helper"
                 }
             },
+            "dao.wrapper": {
+                "name": "ksmf",
+                "type": "lib",
+                "params": { "exclude": ["forest"] },
+                "namespace": "dao.Wrapper",
+                "dependency": {
+                    "helper": "helper"
+                }
+            },
             "error": {
                 "name": "ksmf",
                 "type": "lib",
@@ -108,29 +151,45 @@
                 "name": "ksmf",
                 "type": "lib",
                 "namespace": "app.Logger"
-            }
-        },
-        "cron": [
-            {
-                "env": "SCHEDULE_RETRIVE_DATA",
-                "value": "0/1 * * * *",
-                "target": {
-                    "type": "action",
-                    "module": "etl",
-                    "name": "LoginService",
-                    "action": "dailyProcessing"
+            },
+            "logger.class": {
+                "name": "ksmf",
+                "type": "package",
+                "namespace": "app.Logger"
+            },
+            "auth": {
+                "name": "Authenticator",
+                "path": "service",
+                "dependency": {
+                    "helper": "helper",
+                    "app": "app"
                 }
             }
-        ]
+        },
+        "cron": [{
+            "env": "SCHEDULE_RETRIVE_DATA",
+            "value": "0/1 * * * *",
+            "target": {
+                "type": "action",
+                "module": "etl",
+                "name": "LoginService",
+                "action": "dailyProcessing"
+            }
+        }]
     },
     "test": {
-        "port": 3031,
+        "port": 3000,
         "host": "localhost",
         "protocol": "http",
         "log": 0,
         "module": {
             "load": [
-                "app"
+                "app",
+                {
+                    "name": "ksmf",
+                    "type": "lib",
+                    "namespace": "task.Cron"
+                }
             ]
         },
         "route": {
@@ -141,19 +200,69 @@
                 "action": "home"
             }
         },
+        "event": {
+            "onInitConfig": ["dao.wrapper"],
+            "onInitModules": ["dao.wrapper"],
+            "onLoadModule": ["dao.wrapper"]
+        },
         "helper": {
-            "Demo": {
-                "name": "Crypto",
-                "module": "app",
-                "path": "service"
-            },
-            "dao": {
-                "name": "DAOSequelize",
-                "path": "service/DAO",
+            "sequelize": {
+                "name": "ksmf",
+                "type": "lib",
+                "namespace": "dao.Sequelize",
                 "dependency": {
                     "helper": "helper"
                 }
+            },
+            "dao": {
+                "name": "ksmf",
+                "type": "lib",
+                "namespace": "dao.Sequelize",
+                "dependency": {
+                    "helper": "helper"
+                }
+            },
+            "dao.wrapper": {
+                "name": "ksmf",
+                "type": "lib",
+                "namespace": "dao.Wrapper",
+                "dependency": {
+                    "helper": "helper"
+                }
+            },
+            "error": {
+                "name": "ksmf",
+                "type": "lib",
+                "namespace": "app.Error"
+            },
+            "logger": {
+                "name": "ksmf",
+                "type": "lib",
+                "namespace": "app.Logger"
+            },
+            "logger.class": {
+                "name": "ksmf",
+                "type": "package",
+                "namespace": "app.Logger"
+            },
+            "auth": {
+                "name": "Authenticator",
+                "path": "service",
+                "dependency": {
+                    "helper": "helper",
+                    "app": "app"
+                }
             }
-        }
+        },
+        "cron": [{
+            "env": "SCHEDULE_RETRIVE_DATA",
+            "value": "0/1 * * * *",
+            "target": {
+                "type": "action",
+                "module": "etl",
+                "name": "LoginService",
+                "action": "dailyProcessing"
+            }
+        }]
     }
 }

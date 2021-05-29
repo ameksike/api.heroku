@@ -18,13 +18,20 @@
             "disableOptimisticBPs": true
         },
         {
+            "type": "pwa-msedge",
+            "request": "launch",
+            "name": "WEB",
+            "url": "http://localhost:3031",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
             "type": "node",
             "request": "launch",
-            "name": "API",
+            "name": "APP",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/bin/server.js"
+            "program": "${workspaceFolder}/bin/server"
         },
         {
             "type": "node",
@@ -33,19 +40,10 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/bin/server.js"
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "WORKER MIGRATE",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
             "args": [
-                "migration"
+                "main"
             ],
-            "program": "${workspaceFolder}/bin/server.js"
-        },
+            "program": "${workspaceFolder}/bin/worker"
+        }
     ]
 }
